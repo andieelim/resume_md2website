@@ -1,6 +1,6 @@
 # Resume-to-Website Project
 
-A modern, responsive personal website generated from a structured resume markdown file. The site renders all core content dynamically from markdown, supports a neo-brutalist visual system with light/dark themes, and can be deployed as a static export on GitHub Pages.
+A modern, responsive personal website generated from a structured resume markdown file. The site renders all core content dynamically from markdown, features a soft pink/black aesthetic with light/dark themes, and can be deployed as a static export on GitHub Pages.
 
 ## Project Overview
 
@@ -13,13 +13,14 @@ This project transforms a resume markdown file into a professional website with 
 
 ## Live Demo
 
-Production website: https://vibz28.github.io/resume_md2website
+Production website: https://andieelim.github.io/resume_md2website
+Download resume (PDF): https://andieelim.github.io/resume_md2website (use the “Download Resume” button)
 
 ## Current Features
 
 - Fully dynamic content rendering from markdown (no hard-coded profile data)
-- Neo-brutalist redesign with light/dark theme support and motion
-- Parsing for highlights, experience, education, skills, projects, courses, and publications
+- Soft pink/black visual system with light/dark theme support and motion
+- Parsing for highlights, experience, education, skills, projects, certifications, and publications
 - Publications section component available but not wired by default
 - Project taxonomy fields (category, metrics, technologies)
 - PDF export using resume data (contacts, phone, and location included)
@@ -81,7 +82,7 @@ Models are defined in `src/lib/models.ts` and include the following major sectio
 - Profile: name, title, headline, bio, skills, skill categories, highlights, contacts
 - Experience: employer, title, timeframe, location, summary, achievements
 - Projects: title, description, link, category, metrics, technologies
-- Education, Courses, Publications
+- Education, Certifications, Publications
 
 ## Resume Markdown Structure Requirements
 
@@ -159,12 +160,12 @@ Each project must include a markdown link in the title to be parsed.
 - One-line description of the project
 ```
 
-### Courses
+### Certifications
 
 ```markdown
-## COURSES
+## CERTIFICATIONS
 
-**Course Title** - Provider Name
+**Certification Title** — Provider Name
 Month Year
 ```
 
@@ -197,7 +198,7 @@ Month Year
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Vibz28/resume_md2website.git
+git clone https://github.com/andieelim/resume_md2website.git
 cd resume_md2website
 
 # 2. Install dependencies
@@ -225,7 +226,7 @@ npm run test:report  # Playwright report viewer
 
 ## GitHub Actions Deployment
 
-The workflow in `.github/workflows/nextjs.yml` builds on pushes to `main` and `production-deploy`, and deploys only when the `main` branch is updated. It uses the GitHub Pages artifact workflow to publish the `out/` directory.
+The workflow in `.github/workflows/nextjs.yml` builds and deploys on pushes to `main` using the GitHub Pages artifact workflow to publish the `out/` directory.
 
 ### Next.js Configuration for Static Export
 
