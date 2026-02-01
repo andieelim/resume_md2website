@@ -116,7 +116,7 @@ export function ContactForm({ profile }: ContactFormProps) {
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-center">Get In Touch</h2>
           <p className="text-center text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Let's discuss AI opportunities, research collaborations, or challenging problems
+            Let's discuss analytics, marketing insights, or data-driven projects
           </p>
         </motion.div>
 
@@ -131,7 +131,7 @@ export function ContactForm({ profile }: ContactFormProps) {
             <div>
               <h3 className="text-2xl font-bold mb-4">Let's Connect</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Whether you're interested in discussing cutting-edge AI research, exploring collaboration opportunities, or have a challenging problem that could benefit from AI solutions, I'd love to hear from you.
+                Whether you're interested in analytics support, marketing insights, or a data-driven project, I'd love to hear from you.
               </p>
             </div>
 

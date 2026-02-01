@@ -122,11 +122,11 @@ export function HeroSimple({ profile, resumeData }: HeroSimpleProps) {
             {/* Main Headline */}
             <motion.div variants={itemVariants} className="space-y-4">
               <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight">
-                <span className="text-foreground">Architecting</span>
+                <span className="text-foreground">Data-Driven</span>
                 <br />
-                <span className="text-gradient">Intelligent</span>
+                <span className="text-gradient">Marketing</span>
                 <br />
-                <span className="text-foreground">Systems</span>
+                <span className="text-foreground">Insights</span>
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground max-w-lg leading-relaxed">
                 {profile.headline}
@@ -207,7 +207,7 @@ export function HeroSimple({ profile, resumeData }: HeroSimpleProps) {
                     <div>
                       <h3 className="text-2xl font-bold">{profile.name}</h3>
                       <p className="text-primary font-mono text-sm">{profile.title.toUpperCase().replace(/\s+/g, '_')}</p>
-                      <p className="text-muted-foreground text-sm mt-1">{profile.highlights && profile.highlights[0]?.label.includes('Active') ? 'Bristol Myers Squibb' : 'AI Solutions'}</p>
+                      <p className="text-muted-foreground text-sm mt-1">{profile.highlights && profile.highlights[0]?.label.includes('Active') ? 'Alliance Health System' : 'Data & Marketing Analytics'}</p>
                     </div>
                   </div>
 

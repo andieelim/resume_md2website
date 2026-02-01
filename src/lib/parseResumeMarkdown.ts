@@ -45,8 +45,6 @@ function parseMarkdownText(text: string): string {
   return result;
 }
 
-// Cache for parsed content to avoid re-parsing the entire resume
-const contentCache = new Map<string, ParsedContent>();
 
 function parseWorkExperience(content: string): ExperienceEntry[] {
   const experience: ExperienceEntry[] = [];
@@ -188,21 +186,8 @@ function parseWorkExperience(content: string): ExperienceEntry[] {
             .map(bullet => parseMarkdownText(bullet));
         }
         
-        // Ensure summary is set with improved logic
-        if (!currentPosition.summary || currentPosition.summary.trim() === '') {
-          if (currentPosition.achievements && currentPosition.achievements.length > 0) {
-            const rawSummary = currentPosition.achievements[0].replace(/<[^>]+>/g, '').trim();
-            if (rawSummary.length > 150) {
-              // Find a good break point (sentence end or word boundary)
-              const breakPoint = rawSummary.indexOf('.', 120);
-              const cutoff = breakPoint > 0 ? breakPoint + 1 : 150;
-              currentPosition.summary = parseMarkdownText(rawSummary.substring(0, cutoff).trim() + '...');
-            } else {
-              currentPosition.summary = currentPosition.achievements[0];
-            }
-          } else {
-            currentPosition.summary = `${currentPosition.title} role at ${employer}.`;
-          }
+        if (!currentPosition.summary) {
+          currentPosition.summary = '';
         }
         
         experience.push(currentPosition as ExperienceEntry);
@@ -233,12 +218,12 @@ function isValidTimeframe(timeframe: string): boolean {
   if (!timeframe) return false;
   
   // Check for common patterns like:
-  // "Jan 2020 – Present", "2020 – 2021", "Jul 2020 – Dec 2021"
+  // "Jan 2020 – Present", "Jan 2020 - Present", "2020 – 2021", "Jul 2020 – Dec 2021"
   const patterns = [
-    /^\w{3} \d{4} – Present$/i,
-    /^\d{4} – \d{4}$/,
-    /^\w{3} \d{4} – \w{3} \d{4}$/i,
-    /^Present$/i
+    /^\w{3} \d{4}\s*(–|-)\s*(Present|Current)$/i,
+    /^\d{4}\s*(–|-)\s*\d{4}$/,
+    /^\w{3} \d{4}\s*(–|-)\s*\w{3} \d{4}$/i,
+    /^(Present|Current)$/i
   ];
   
   return patterns.some(pattern => pattern.test(timeframe.trim()));
@@ -251,56 +236,52 @@ function parseProjects(content: string): Project[] {
   if (!projectsSection) return projects;
   
   const projectText = projectsSection[1];
-  
-  // Split by double newlines to get individual project blocks
-  const projectBlocks = projectText.split(/\n\n+/).filter(block => block.trim());
-  
-  for (const block of projectBlocks) {
-    // Match **[Title](Link)** pattern
-    const titleMatch = block.match(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/);
-    if (!titleMatch) continue;
-    
-    const title = titleMatch[1].trim();
-    const link = titleMatch[2].trim();
-    
-    // Parse additional fields
-    const lines = block.split('\n');
-    let description = '';
-    let category = '';
-    let image = '';
-    let metrics: string[] = [];
-    let technologies: string[] = [];
-    
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      
-      if (trimmedLine.startsWith('**Category:**')) {
-        category = trimmedLine.replace(/\*\*Category:\*\*/, '').trim();
-      } else if (trimmedLine.startsWith('**Image:**')) {
-        image = trimmedLine.replace(/\*\*Image:\*\*/, '').trim();
-      } else if (trimmedLine.startsWith('**Metrics:**')) {
-        const metricsText = trimmedLine.replace(/\*\*Metrics:\*\*/, '').trim();
-        metrics = metricsText.split(',').map(m => m.trim()).filter(m => m.length > 0);
-      } else if (trimmedLine.startsWith('**Technologies:**')) {
-        const techText = trimmedLine.replace(/\*\*Technologies:\*\*/, '').trim();
-        technologies = techText.split(',').map(t => t.trim()).filter(t => t.length > 0);
-      } else if (trimmedLine.startsWith('- ')) {
-        description = trimmedLine.substring(2).trim();
-      }
+  const lines = projectText.split('\n');
+  let currentProject: Project | null = null;
+
+  const flushProject = () => {
+    if (currentProject && currentProject.title && currentProject.description) {
+      projects.push(currentProject);
     }
-    
-    if (title && description) {
-      projects.push({
-        title,
-        description,
-        link,
-        image: image || undefined,
-        category,
-        metrics,
-        technologies
-      });
+  };
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    if (!trimmedLine) continue;
+
+    const titleMatch = trimmedLine.match(/^\*\*\[([^\]]+)\]\(([^)]+)\)\*\*$/);
+    if (titleMatch) {
+      flushProject();
+      currentProject = {
+        title: titleMatch[1].trim(),
+        link: titleMatch[2].trim(),
+        description: '',
+        category: '',
+        metrics: [],
+        technologies: []
+      };
+      continue;
+    }
+
+    if (!currentProject) continue;
+
+    if (trimmedLine.startsWith('**Category:**')) {
+      currentProject.category = trimmedLine.replace(/\*\*Category:\*\*/, '').trim();
+    } else if (trimmedLine.startsWith('**Image:**')) {
+      const image = trimmedLine.replace(/\*\*Image:\*\*/, '').trim();
+      currentProject.image = image || undefined;
+    } else if (trimmedLine.startsWith('**Metrics:**')) {
+      const metricsText = trimmedLine.replace(/\*\*Metrics:\*\*/, '').trim();
+      currentProject.metrics = metricsText.split(',').map(m => m.trim()).filter(m => m.length > 0);
+    } else if (trimmedLine.startsWith('**Technologies:**')) {
+      const techText = trimmedLine.replace(/\*\*Technologies:\*\*/, '').trim();
+      currentProject.technologies = techText.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    } else if (trimmedLine.startsWith('- ')) {
+      currentProject.description = trimmedLine.substring(2).trim();
     }
   }
+
+  flushProject();
   
   return projects;
 }
@@ -497,11 +478,7 @@ export function parseResumeMarkdown(): ParsedContent {
     const rawContent = fs.readFileSync(resumePath, 'utf-8');
     const content = stripHtmlComments(rawContent);
     
-    // Check cache first (use file content as cache key)
-    const cacheKey = content.length + '_' + content.substring(0, 100).replace(/\s/g, '');
-    if (contentCache.has(cacheKey)) {
-      return contentCache.get(cacheKey)!;
-    }
+    // Disable content cache to ensure markdown edits always render immediately
 
     // Parse profile information
     const lines = content.split('\n');
@@ -510,7 +487,7 @@ export function parseResumeMarkdown(): ParsedContent {
     
     // Extract headline
     const headlineLine = lines.find(line => line.startsWith('**Headline:**'));
-    const headline = headlineLine ? headlineLine.replace('**Headline:**', '').trim() : `${name} — ${title}`;
+    const headline = headlineLine ? headlineLine.replace('**Headline:**', '').trim() : '';
     
     // Extract contact information
     const contactLine = lines.find(line => line.includes('mailto:'));
@@ -568,7 +545,10 @@ export function parseResumeMarkdown(): ParsedContent {
     }
 
     // Parse skills
-    const { allSkills: skills, categories: skillCategories } = parseSkills(content);
+    const { categories: skillCategories } = parseSkills(content);
+    const skills = skillCategories
+      .filter(category => category.category.toLowerCase() !== 'languages')
+      .flatMap(category => category.skills);
 
     // Create bio from resume content (avoid hard-coded content)
     const bio = headline;
@@ -578,7 +558,7 @@ export function parseResumeMarkdown(): ParsedContent {
       title,
       headline,
       bio,
-      skills: skills.slice(0, 15), // Get more skills for better display
+      skills: skills.slice(0, 15),
       skillCategories,
       highlights,
       contacts
@@ -600,14 +580,7 @@ export function parseResumeMarkdown(): ParsedContent {
       publications
     };
 
-    // Cache the result (limit cache size to prevent memory leaks)
-    if (contentCache.size > 50) {
-      const firstKey = contentCache.keys().next().value;
-      if (firstKey !== undefined) {
-        contentCache.delete(firstKey);
-      }
-    }
-    contentCache.set(cacheKey, result);
+    // Content cache disabled
 
     return result;
   } catch (error) {

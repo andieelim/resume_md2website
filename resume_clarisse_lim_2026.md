@@ -74,9 +74,11 @@ Jun 2021 | Manila, Philippines
 
 ## SKILLS
 
+**Core Analytics:** Tableau, Microsoft Excel, Looker Studio, SQL, Power BI, Statistics
+**Marketing & BI Tools:** Salesforce, Marketing Analytics, Canva, Google Suite, Microsoft PowerPoint, Microsoft Word
+**Data & Query:** Stored Procedures, Power Query Editor
+**Programming:** Python, Pandas, Numpy, Sklearn, Matplotlib, R
 **Languages:** English, Tagalog, Basic Chinese
-**Skills:** Tableau, Microsoft Excel, Salesforce, Looker Studio, Microsoft PowerPoint, Microsoft Word, Google Suite, Stored Procedures, Power BI, Statistics, Canva, Marketing Analytics
-**Programming Languages:** Python, Numpy, Pandas, Sklearn, Matplotlib, R, SQL, Power Query Editor
 
 ---
 

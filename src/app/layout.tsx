@@ -6,7 +6,7 @@ import { parseResumeMarkdown } from '@/lib/parseResumeMarkdown'
 
 export const metadata: Metadata = {
   title: 'Clarisse Lim — Data Analyst',
-  description: 'Architecting AI solutions for manufacturing and healthcare. Expert in LangGraph, LLM orchestration, and production-scale ML systems.',
+  description: 'Data Analyst and Marketing Analyst focused on analytics, dashboards, and data-driven insights for business growth.',
 }
 
 export default function RootLayout({

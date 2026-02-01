@@ -63,7 +63,7 @@ export function SkillsSection({ skillCategories, isStandalone = false }: SkillsS
             <h2 className="text-4xl md:text-5xl font-bold text-center">Skills</h2>
           )}
           <p className="text-center text-muted-foreground mt-4 max-w-2xl mx-auto">
-            A comprehensive toolkit spanning AI/ML, data architecture, and production engineering
+            A focused toolkit for analytics, dashboards, and data-driven marketing insights
           </p>
         </motion.div>
 

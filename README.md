@@ -305,6 +305,6 @@ This project is open source and available under the MIT License.
 ## About
 
 Built by Clarisse Lim
-Senior Manager, AI Solution Architect at Bristol Myers Squibb
+Data Analyst at Alliance Health System
 
 Last Updated: January 31, 2026
