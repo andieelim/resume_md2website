@@ -64,23 +64,18 @@ module.exports = {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))'
         },
-        // Custom colors for the neo-brutalist theme
-        neon: {
-          cyan: '#00f5ff',
-          lime: '#a3ff00',
-          pink: '#ff00ff',
-          yellow: '#ffff00',
-        },
-        charcoal: {
-          DEFAULT: '#0a0a0a',
-          light: '#141414',
-          lighter: '#1a1a1a',
+        // Custom pink palette accents
+        blush: {
+          DEFAULT: '#ff5ba6',
+          light: '#ffd3e5',
+          soft: '#f7a3c2',
+          deep: '#c43a78',
         }
       },
       fontFamily: {
-        sans: ['Space Grotesk', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        sans: ['Outfit', 'system-ui', 'sans-serif'],
+        mono: ['DM Mono', 'Outfit', 'monospace'],
+        display: ['Fraunces', 'Outfit', 'serif'],
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',

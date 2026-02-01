@@ -1,20 +1,28 @@
 import fs from 'fs';
 import path from 'path';
-import type { ParsedContent, Profile, ExperienceEntry, Project, Publication, Education, Course } from './models';
+import type { ParsedContent, Profile, ExperienceEntry, Project, Publication, Education, Certification } from './models';
 
 // Cache for parsed markdown text to avoid re-processing
 const markdownCache = new Map<string, string>();
+
+function stripHtmlComments(text: string): string {
+  if (!text) return '';
+  return text.replace(/<!--[\s\S]*?-->/g, '').trim();
+}
 
 // Helper function to parse markdown formatting
 function parseMarkdownText(text: string): string {
   if (!text) return '';
   
+  const cleanedText = stripHtmlComments(text);
+  if (!cleanedText) return '';
+
   // Check cache first
-  if (markdownCache.has(text)) {
-    return markdownCache.get(text)!;
+  if (markdownCache.has(cleanedText)) {
+    return markdownCache.get(cleanedText)!;
   }
   
-  let result = text;
+  let result = cleanedText;
   
   // Convert **bold** to <strong>
   result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -32,13 +40,11 @@ function parseMarkdownText(text: string): string {
       markdownCache.delete(firstKey);
     }
   }
-  markdownCache.set(text, result);
+  markdownCache.set(cleanedText, result);
   
   return result;
 }
 
-// Cache for parsed content to avoid re-parsing the entire resume
-const contentCache = new Map<string, ParsedContent>();
 
 function parseWorkExperience(content: string): ExperienceEntry[] {
   const experience: ExperienceEntry[] = [];
@@ -180,21 +186,8 @@ function parseWorkExperience(content: string): ExperienceEntry[] {
             .map(bullet => parseMarkdownText(bullet));
         }
         
-        // Ensure summary is set with improved logic
-        if (!currentPosition.summary || currentPosition.summary.trim() === '') {
-          if (currentPosition.achievements && currentPosition.achievements.length > 0) {
-            const rawSummary = currentPosition.achievements[0].replace(/<[^>]+>/g, '').trim();
-            if (rawSummary.length > 150) {
-              // Find a good break point (sentence end or word boundary)
-              const breakPoint = rawSummary.indexOf('.', 120);
-              const cutoff = breakPoint > 0 ? breakPoint + 1 : 150;
-              currentPosition.summary = parseMarkdownText(rawSummary.substring(0, cutoff).trim() + '...');
-            } else {
-              currentPosition.summary = currentPosition.achievements[0];
-            }
-          } else {
-            currentPosition.summary = `${currentPosition.title} role at ${employer}.`;
-          }
+        if (!currentPosition.summary) {
+          currentPosition.summary = '';
         }
         
         experience.push(currentPosition as ExperienceEntry);
@@ -225,12 +218,12 @@ function isValidTimeframe(timeframe: string): boolean {
   if (!timeframe) return false;
   
   // Check for common patterns like:
-  // "Jan 2020 – Present", "2020 – 2021", "Jul 2020 – Dec 2021"
+  // "Jan 2020 – Present", "Jan 2020 - Present", "2020 – 2021", "Jul 2020 – Dec 2021"
   const patterns = [
-    /^\w{3} \d{4} – Present$/i,
-    /^\d{4} – \d{4}$/,
-    /^\w{3} \d{4} – \w{3} \d{4}$/i,
-    /^Present$/i
+    /^\w{3} \d{4}\s*(–|-)\s*(Present|Current)$/i,
+    /^\d{4}\s*(–|-)\s*\d{4}$/,
+    /^\w{3} \d{4}\s*(–|-)\s*\w{3} \d{4}$/i,
+    /^(Present|Current)$/i
   ];
   
   return patterns.some(pattern => pattern.test(timeframe.trim()));
@@ -243,52 +236,52 @@ function parseProjects(content: string): Project[] {
   if (!projectsSection) return projects;
   
   const projectText = projectsSection[1];
-  
-  // Split by double newlines to get individual project blocks
-  const projectBlocks = projectText.split(/\n\n+/).filter(block => block.trim());
-  
-  for (const block of projectBlocks) {
-    // Match **[Title](Link)** pattern
-    const titleMatch = block.match(/\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/);
-    if (!titleMatch) continue;
-    
-    const title = titleMatch[1].trim();
-    const link = titleMatch[2].trim();
-    
-    // Parse additional fields
-    const lines = block.split('\n');
-    let description = '';
-    let category = '';
-    let metrics: string[] = [];
-    let technologies: string[] = [];
-    
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-      
-      if (trimmedLine.startsWith('**Category:**')) {
-        category = trimmedLine.replace(/\*\*Category:\*\*/, '').trim();
-      } else if (trimmedLine.startsWith('**Metrics:**')) {
-        const metricsText = trimmedLine.replace(/\*\*Metrics:\*\*/, '').trim();
-        metrics = metricsText.split(',').map(m => m.trim()).filter(m => m.length > 0);
-      } else if (trimmedLine.startsWith('**Technologies:**')) {
-        const techText = trimmedLine.replace(/\*\*Technologies:\*\*/, '').trim();
-        technologies = techText.split(',').map(t => t.trim()).filter(t => t.length > 0);
-      } else if (trimmedLine.startsWith('- ')) {
-        description = trimmedLine.substring(2).trim();
-      }
+  const lines = projectText.split('\n');
+  let currentProject: Project | null = null;
+
+  const flushProject = () => {
+    if (currentProject && currentProject.title && currentProject.description) {
+      projects.push(currentProject);
     }
-    
-    if (title && description) {
-      projects.push({
-        title,
-        description,
-        link,
-        category,
-        metrics,
-        technologies
-      });
+  };
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    if (!trimmedLine) continue;
+
+    const titleMatch = trimmedLine.match(/^\*\*\[([^\]]+)\]\(([^)]+)\)\*\*$/);
+    if (titleMatch) {
+      flushProject();
+      currentProject = {
+        title: titleMatch[1].trim(),
+        link: titleMatch[2].trim(),
+        description: '',
+        category: '',
+        metrics: [],
+        technologies: []
+      };
+      continue;
+    }
+
+    if (!currentProject) continue;
+
+    if (trimmedLine.startsWith('**Category:**')) {
+      currentProject.category = trimmedLine.replace(/\*\*Category:\*\*/, '').trim();
+    } else if (trimmedLine.startsWith('**Image:**')) {
+      const image = trimmedLine.replace(/\*\*Image:\*\*/, '').trim();
+      currentProject.image = image || undefined;
+    } else if (trimmedLine.startsWith('**Metrics:**')) {
+      const metricsText = trimmedLine.replace(/\*\*Metrics:\*\*/, '').trim();
+      currentProject.metrics = metricsText.split(',').map(m => m.trim()).filter(m => m.length > 0);
+    } else if (trimmedLine.startsWith('**Technologies:**')) {
+      const techText = trimmedLine.replace(/\*\*Technologies:\*\*/, '').trim();
+      currentProject.technologies = techText.split(',').map(t => t.trim()).filter(t => t.length > 0);
+    } else if (trimmedLine.startsWith('- ')) {
+      currentProject.description = trimmedLine.substring(2).trim();
     }
   }
+
+  flushProject();
   
   return projects;
 }
@@ -361,29 +354,37 @@ function parseEducation(content: string): Education[] {
       location = parts[1] || '';
     }
     
+    const details = lines
+      .slice(2)
+      .map(line => line.trim())
+      .filter(line => line.startsWith('- '))
+      .map(line => line.replace(/^- /, '').trim())
+      .filter(line => line.length > 0);
+
     education.push({
       institution,
       degree,
       timeframe,
-      location
+      location,
+      details: details.length > 0 ? details : undefined
     });
   }
   
   return education;
 }
 
-function parseCourses(content: string): Course[] {
-  const courses: Course[] = [];
+function parseCertifications(content: string): Certification[] {
+  const certifications: Certification[] = [];
   
-  const coursesSection = content.match(/## COURSES\s*\n\n?([\s\S]*?)(?=\n---|\n##|$)/);
-  if (!coursesSection) return courses;
+  const certSection = content.match(/## CERTIFICATIONS\s*\n\n?([\s\S]*?)(?=\n---|\n##|$)/);
+  if (!certSection) return certifications;
   
-  const coursesText = coursesSection[1];
+  const certText = certSection[1];
   
-  // Split by double newlines to get individual course entries
-  const courseBlocks = coursesText.split(/\n\n+/).filter(block => block.trim());
+  // Split by double newlines to get individual certification entries
+  const certBlocks = certText.split(/\n\n+/).filter(block => block.trim());
   
-  for (const block of courseBlocks) {
+  for (const block of certBlocks) {
     const lines = block.split('\n').filter(line => line.trim());
     if (lines.length === 0) continue;
     
@@ -401,14 +402,14 @@ function parseCourses(content: string): Course[] {
       date = lines[1].trim();
     }
     
-    courses.push({
+    certifications.push({
       title,
       institution,
       date
     });
   }
   
-  return courses;
+  return certifications;
 }
 
 function parsePublications(content: string): Publication[] {
@@ -473,14 +474,11 @@ function parsePublications(content: string): Publication[] {
 
 export function parseResumeMarkdown(): ParsedContent {
   try {
-    const resumePath = path.join(process.cwd(), 'resume_vibhor_janey_updated_aug_2025.md');
-    const content = fs.readFileSync(resumePath, 'utf-8');
+    const resumePath = path.join(process.cwd(), 'resume_clarisse_lim_2026.md');
+    const rawContent = fs.readFileSync(resumePath, 'utf-8');
+    const content = stripHtmlComments(rawContent);
     
-    // Check cache first (use file content as cache key)
-    const cacheKey = content.length + '_' + content.substring(0, 100).replace(/\s/g, '');
-    if (contentCache.has(cacheKey)) {
-      return contentCache.get(cacheKey)!;
-    }
+    // Disable content cache to ensure markdown edits always render immediately
 
     // Parse profile information
     const lines = content.split('\n');
@@ -489,7 +487,7 @@ export function parseResumeMarkdown(): ParsedContent {
     
     // Extract headline
     const headlineLine = lines.find(line => line.startsWith('**Headline:**'));
-    const headline = headlineLine ? headlineLine.replace('**Headline:**', '').trim() : `${name} — ${title}`;
+    const headline = headlineLine ? headlineLine.replace('**Headline:**', '').trim() : '';
     
     // Extract contact information
     const contactLine = lines.find(line => line.includes('mailto:'));
@@ -547,28 +545,30 @@ export function parseResumeMarkdown(): ParsedContent {
     }
 
     // Parse skills
-    const { allSkills: skills, categories: skillCategories } = parseSkills(content);
+    const { categories: skillCategories } = parseSkills(content);
+    const skills = skillCategories
+      .filter(category => category.category.toLowerCase() !== 'languages')
+      .flatMap(category => category.skills);
 
-    // Create bio
-    let bio = `${name} is an experienced ${title} with expertise in AI solution architecture, data engineering, and machine learning applications.`;
-    bio += '\n\nCurrently serving as Senior Manager of AI Solution Architect at Bristol Myers Squibb, leading development of AI copilot experiences for manufacturing operations and building advanced data architecture solutions.';
+    // Create bio from resume content (avoid hard-coded content)
+    const bio = headline;
 
     const profile: Profile = {
       name,
       title,
       headline,
       bio,
-      skills: skills.slice(0, 15), // Get more skills for better display
+      skills: skills.slice(0, 15),
       skillCategories,
       highlights,
       contacts
     };
 
-    // Parse experience, education, projects, courses, and publications
+    // Parse experience, education, projects, certifications, and publications
     const experience = parseWorkExperience(content);
     const education = parseEducation(content);
     const projects = parseProjects(content);
-    const courses = parseCourses(content);
+    const certifications = parseCertifications(content);
     const publications = parsePublications(content);
 
     const result = {
@@ -576,90 +576,32 @@ export function parseResumeMarkdown(): ParsedContent {
       experience,
       education,
       projects,
-      courses,
+      certifications,
       publications
     };
 
-    // Cache the result (limit cache size to prevent memory leaks)
-    if (contentCache.size > 50) {
-      const firstKey = contentCache.keys().next().value;
-      if (firstKey !== undefined) {
-        contentCache.delete(firstKey);
-      }
-    }
-    contentCache.set(cacheKey, result);
+    // Content cache disabled
 
     return result;
   } catch (error) {
     console.error('Error parsing resume:', error);
     
-    // Fallback data
+    // Fallback data (empty to avoid injecting unrelated content)
     return {
       profile: {
-        name: 'Vibhor Janey',
-        title: 'AI Solution Architect',
-        headline: 'Architecting Intelligent Systems — delivering production-scale ML systems and agentic orchestration for manufacturing and healthcare.',
-        bio: 'Experienced AI Solution Architect specializing in manufacturing and healthcare AI applications.\n\nCurrently serving as Senior Manager of AI Solution Architect at Bristol Myers Squibb, leading development of AI copilot experiences for manufacturing operations.',
-        skills: ['AI Architecture', 'Machine Learning', 'Data Engineering', 'Python', 'Next.js', 'React'],
-        skillCategories: [
-          { category: 'AI & ML', skills: ['Python', 'Machine Learning', 'Deep Learning', 'TensorFlow', 'PyTorch'] },
-          { category: 'Development', skills: ['React', 'Next.js', 'TypeScript', 'JavaScript'] },
-          { category: 'Cloud & Infrastructure', skills: ['AWS', 'Docker', 'Kubernetes', 'CI/CD'] }
-        ],
-        highlights: [
-          { value: '5,000+', label: 'Active Users' },
-          { value: '6+', label: 'Years Experience' },
-          { value: '40%', label: 'Efficiency Gain' },
-          { value: '98.59%', label: 'CV Accuracy' }
-        ],
-        contacts: [
-          { label: 'Email', url: 'mailto:vibhor.janey@gmail.com' },
-          { label: 'LinkedIn', url: 'https://www.linkedin.com/in/vibhorjaney/' },
-          { label: 'GitHub', url: 'https://github.com/Vibz28' }
-        ]
+        name: '',
+        title: '',
+        headline: '',
+        bio: '',
+        skills: [],
+        skillCategories: [],
+        highlights: [],
+        contacts: []
       },
-      experience: [
-        {
-          employer: 'Bristol Myers Squibb',
-          title: 'Senior Manager, AI Solution Architect',
-          timeframe: 'Jul 2025 – Present',
-          location: 'New Brunswick, NJ',
-          summary: 'Delivering AI copilot and decision-support experience targeting 5,000+ manufacturing users.',
-          achievements: [
-            'Architecting agentic orchestration layer with graph-based workflow engine',
-            'Building pipelines for RCA on deviations and auto-generating CAPA drafts',
-            'Implementing LLM observability and tracing layer for generation traceability'
-          ]
-        }
-      ],
-      education: [
-        {
-          institution: 'Tufts University',
-          degree: 'MS, Data Science',
-          timeframe: 'Sep 2021 – Dec 2022',
-          location: 'Medford, MA'
-        },
-        {
-          institution: 'Purdue University',
-          degree: 'B.Sc., Computer Graphics Technology',
-          timeframe: 'Aug 2015 – May 2019',
-          location: 'West Lafayette, IN'
-        }
-      ],
-      projects: [
-        {
-          title: 'Cotton Pest Classification — Few-Shot Prototypical Networks (PyTorch)',
-          description: 'Proposed and implemented a few-shot prototypical network to identify cotton crop pests with limited annotated samples.',
-          link: 'https://1drv.ms/b/s!AuN5d6BNlVtfg6tVg6HA8sfAXcIulg?e=krITgi'
-        }
-      ],
-      courses: [
-        {
-          title: "Steve Hoberman's Live Online Data Modeling Master Class",
-          institution: 'Technics Publications',
-          date: 'Dec 2024'
-        }
-      ],
+      experience: [],
+      education: [],
+      projects: [],
+      certifications: [],
       publications: []
     };
   }

@@ -51,7 +51,7 @@ export function ExperienceSection({ experience }: ExperienceSectionProps) {
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-center">Experience</h2>
           <p className="text-center text-muted-foreground mt-4 max-w-2xl mx-auto">
-            My journey through the AI industry, from research to production-scale implementations
+            My journey across data analytics and marketing, from dashboards to strategic insights
           </p>
         </motion.div>
 
