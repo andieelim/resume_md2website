@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,68 +8,68 @@
 
 :root {
   --font-size: 16px;
-  /* Light Mode - Neo-Brutalist */
-  --background: 0 0% 98%;
-  --foreground: 0 0% 4%;
+  /* Light Mode - Soft Pink Minimal */
+  --background: 0 0% 100%;
+  --foreground: 240 10% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 4%;
+  --card-foreground: 240 10% 10%;
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 4%;
-  /* Electric Cyan as primary */
-  --primary: 180 100% 45%;
+  --popover-foreground: 240 10% 10%;
+  /* Pink primary */
+  --primary: 332 87% 60%;
   --primary-foreground: 0 0% 100%;
-  /* Neon Lime as secondary */
-  --secondary: 78 100% 45%;
-  --secondary-foreground: 0 0% 4%;
-  --muted: 0 0% 94%;
-  --muted-foreground: 0 0% 45%;
-  /* Neon Pink as accent */
-  --accent: 300 100% 50%;
+  /* Soft blush secondary */
+  --secondary: 334 70% 78%;
+  --secondary-foreground: 240 10% 15%;
+  --muted: 330 25% 94%;
+  --muted-foreground: 240 8% 45%;
+  /* Rose accent */
+  --accent: 318 70% 55%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 88%;
-  --input: 0 0% 90%;
-  --ring: 180 100% 45%;
+  --border: 330 25% 88%;
+  --input: 330 20% 92%;
+  --ring: 332 87% 60%;
   --radius: 0.5rem;
   /* Chart colors */
-  --chart-1: 180 100% 45%;
-  --chart-2: 78 100% 45%;
-  --chart-3: 300 100% 50%;
-  --chart-4: 45 100% 50%;
-  --chart-5: 240 100% 55%;
+  --chart-1: 332 87% 60%;
+  --chart-2: 318 70% 55%;
+  --chart-3: 345 75% 70%;
+  --chart-4: 320 45% 55%;
+  --chart-5: 350 65% 60%;
 }
 
 .dark {
-  /* Dark Mode - Neo-Brutalist */
-  --background: 0 0% 4%;
+  /* Dark Mode - Noir Pink */
+  --background: 240 7% 6%;
   --foreground: 0 0% 98%;
-  --card: 0 0% 8%;
+  --card: 240 7% 10%;
   --card-foreground: 0 0% 98%;
-  --popover: 0 0% 6%;
+  --popover: 240 7% 9%;
   --popover-foreground: 0 0% 98%;
-  /* Electric Cyan as primary */
-  --primary: 180 100% 50%;
-  --primary-foreground: 0 0% 4%;
-  /* Neon Lime as secondary */
-  --secondary: 78 100% 50%;
-  --secondary-foreground: 0 0% 4%;
-  --muted: 0 0% 12%;
-  --muted-foreground: 0 0% 64%;
-  /* Neon Pink as accent */
-  --accent: 300 100% 50%;
+  /* Pink primary */
+  --primary: 332 90% 70%;
+  --primary-foreground: 240 7% 8%;
+  /* Soft blush secondary */
+  --secondary: 334 60% 45%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 6% 15%;
+  --muted-foreground: 0 0% 70%;
+  /* Rose accent */
+  --accent: 318 70% 60%;
   --accent-foreground: 0 0% 98%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 20%;
-  --input: 0 0% 15%;
-  --ring: 180 100% 50%;
+  --border: 240 8% 20%;
+  --input: 240 8% 16%;
+  --ring: 332 90% 70%;
   /* Chart colors */
-  --chart-1: 180 100% 50%;
-  --chart-2: 78 100% 50%;
-  --chart-3: 300 100% 50%;
-  --chart-4: 60 100% 50%;
-  --chart-5: 240 100% 60%;
+  --chart-1: 332 90% 70%;
+  --chart-2: 318 70% 60%;
+  --chart-3: 345 75% 70%;
+  --chart-4: 320 45% 55%;
+  --chart-5: 350 65% 60%;
 }
 
 @layer base {
@@ -79,7 +79,7 @@
   
   html {
     scroll-behavior: smooth;
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
   }
   
   body {
@@ -91,20 +91,20 @@
   }
   
   ::selection {
-    background: hsl(var(--primary) / 0.3);
+    background: hsl(var(--primary) / 0.2);
     color: hsl(var(--foreground));
   }
 }
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'Fraunces', 'Outfit', serif;
     font-weight: 600;
     letter-spacing: -0.02em;
   }
   
   code, pre, .mono {
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: 'DM Mono', 'Outfit', monospace;
   }
 }
 
@@ -114,93 +114,85 @@
   }
   
   .text-gradient {
-    background: linear-gradient(135deg, hsl(180 100% 45%) 0%, hsl(78 100% 45%) 50%, hsl(300 100% 50%) 100%);
+    background: linear-gradient(135deg, hsl(332 90% 70%) 0%, hsl(318 70% 60%) 50%, hsl(345 75% 70%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .dark .text-gradient {
-    background: linear-gradient(135deg, #00f5ff 0%, #a3ff00 50%, #ff00ff 100%);
+    background: linear-gradient(135deg, #ff84c6 0%, #ff5ba6 50%, #ffc1dd 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .text-gradient-cyan-lime {
-    background: linear-gradient(135deg, hsl(180 100% 45%) 0%, hsl(78 100% 45%) 100%);
+    background: linear-gradient(135deg, hsl(332 90% 70%) 0%, hsl(318 70% 60%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .dark .text-gradient-cyan-lime {
-    background: linear-gradient(135deg, #00f5ff 0%, #a3ff00 100%);
+    background: linear-gradient(135deg, #ff84c6 0%, #ff5ba6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .border-gradient {
-    border-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent))) 1;
+    border-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))) 1;
   }
   
   .bg-grid-pattern {
-    background-image: 
-      linear-gradient(to right, hsl(var(--primary) / 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--primary) / 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
+    background-image: radial-gradient(hsl(var(--primary) / 0.18) 1px, transparent 1px);
+    background-size: 36px 36px;
   }
   
   .dark .bg-grid-pattern {
-    background-image: 
-      linear-gradient(to right, rgba(0, 245, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
+    background-image: radial-gradient(rgba(255, 133, 196, 0.18) 1px, transparent 1px);
+    background-size: 36px 36px;
   }
   
   .bg-grid-pattern-dense {
-    background-image: 
-      linear-gradient(to right, hsl(var(--primary) / 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--primary) / 0.05) 1px, transparent 1px);
-    background-size: 25px 25px;
+    background-image: radial-gradient(hsl(var(--accent) / 0.18) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
   
   .dark .bg-grid-pattern-dense {
-    background-image: 
-      linear-gradient(to right, rgba(0, 245, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 245, 255, 0.05) 1px, transparent 1px);
-    background-size: 25px 25px;
+    background-image: radial-gradient(rgba(255, 133, 196, 0.2) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
   
   .glow-cyan {
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.1);
+    box-shadow: 0 0 24px hsl(var(--primary) / 0.25), 0 0 60px hsl(var(--accent) / 0.15);
   }
   
   .dark .glow-cyan {
-    box-shadow: 0 0 20px rgba(0, 245, 255, 0.3), 0 0 40px rgba(0, 245, 255, 0.1);
+    box-shadow: 0 0 24px rgba(255, 91, 166, 0.3), 0 0 60px rgba(255, 193, 221, 0.2);
   }
   
   .glow-lime {
-    box-shadow: 0 0 20px hsl(var(--secondary) / 0.3), 0 0 40px hsl(var(--secondary) / 0.1);
+    box-shadow: 0 0 16px hsl(var(--secondary) / 0.35), 0 0 36px hsl(var(--secondary) / 0.2);
   }
   
   .dark .glow-lime {
-    box-shadow: 0 0 20px rgba(163, 255, 0, 0.3), 0 0 40px rgba(163, 255, 0, 0.1);
+    box-shadow: 0 0 16px rgba(247, 163, 194, 0.35), 0 0 36px rgba(247, 163, 194, 0.2);
   }
   
   .text-glow-cyan {
-    text-shadow: 0 0 10px hsl(var(--primary) / 0.5), 0 0 20px hsl(var(--primary) / 0.3);
+    text-shadow: 0 0 12px hsl(var(--primary) / 0.5), 0 0 24px hsl(var(--accent) / 0.3);
   }
   
   .dark .text-glow-cyan {
-    text-shadow: 0 0 10px rgba(0, 245, 255, 0.5), 0 0 20px rgba(0, 245, 255, 0.3);
+    text-shadow: 0 0 12px rgba(255, 91, 166, 0.45), 0 0 24px rgba(255, 193, 221, 0.25);
   }
   
   .glass-card {
-    background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--primary) / 0.1);
+    background: hsl(var(--card) / 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid hsl(var(--primary) / 0.15);
   }
 }
 

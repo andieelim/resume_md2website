@@ -67,10 +67,10 @@ export function generateResumePDF(options: PDFOptions = {}) {
       format
     });
 
-    // Set fonts and colors
-    const primaryColor: [number, number, number] = [20, 184, 166]; // Teal-500
-    const textColor: [number, number, number] = [55, 65, 81]; // Gray-700
-    const lightGray: [number, number, number] = [156, 163, 175]; // Gray-400
+    // Set fonts and colors (pink + neutral to match site)
+    const primaryColor: [number, number, number] = [255, 91, 166]; // Pink
+    const textColor: [number, number, number] = [31, 41, 55]; // Slate-800
+    const lightGray: [number, number, number] = [148, 163, 184]; // Slate-400
 
     let currentY = 20;
     const pageWidth = doc.internal.pageSize.getWidth();

@@ -77,10 +77,10 @@ export function NavSimple({ resumeData }: NavSimpleProps) {
               <a href="#" className="group flex items-center gap-2">
                 <div className="relative w-10 h-10 flex items-center justify-center">
                   <div className="absolute inset-0 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors" />
-                  <span className="text-xl font-bold text-gradient-cyan-lime">CAL</span>
+                  <span className="text-base font-bold text-gradient-cyan-lime tracking-tight leading-none">CAL</span>
                 </div>
-                <span className="hidden sm:block text-sm font-mono text-muted-foreground">
-                  DATA_ANALYST
+                <span className="hidden sm:block text-sm text-muted-foreground">
+                  Data Analyst
                 </span>
               </a>
             </motion.div>
