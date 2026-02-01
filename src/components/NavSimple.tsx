@@ -77,10 +77,10 @@ export function NavSimple({ resumeData }: NavSimpleProps) {
               <a href="#" className="group flex items-center gap-2">
                 <div className="relative w-10 h-10 flex items-center justify-center">
                   <div className="absolute inset-0 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors" />
-                  <span className="text-xl font-bold text-gradient-cyan-lime">VJ</span>
+                  <span className="text-xl font-bold text-gradient-cyan-lime">CAL</span>
                 </div>
                 <span className="hidden sm:block text-sm font-mono text-muted-foreground">
-                  AI_ARCHITECT
+                  DATA_ANALYST
                 </span>
               </a>
             </motion.div>
@@ -183,13 +183,13 @@ export function NavSimple({ resumeData }: NavSimpleProps) {
                 </button>
                 
                 <div className="flex justify-center gap-4 mt-6">
-                  <a href="https://github.com/Vibz28" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg hover:bg-muted transition-colors">
+                  <a href="https://github.com/andieelim" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg hover:bg-muted transition-colors">
                     <Github className="w-5 h-5" />
                   </a>
-                  <a href="https://www.linkedin.com/in/vibhorjaney/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg hover:bg-muted transition-colors">
+                  <a href="https://www.linkedin.com/in/clarissealim/" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg hover:bg-muted transition-colors">
                     <Linkedin className="w-5 h-5" />
                   </a>
-                  <a href="mailto:vibhor.janey@gmail.com" className="p-3 rounded-lg hover:bg-muted transition-colors">
+                  <a href="mailto:clarisse.lim416@gmail.com" className="p-3 rounded-lg hover:bg-muted transition-colors">
                     <Mail className="w-5 h-5" />
                   </a>
                 </div>

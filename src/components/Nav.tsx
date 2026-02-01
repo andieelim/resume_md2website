@@ -154,7 +154,7 @@ export function Nav({ darkMode, toggleDarkMode }: NavigationProps = {}) {
                 href={getPath('/')} 
                 className="hover:text-teal-700 dark:hover:text-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-md px-1 py-1"
               >
-                Vibhor Janey
+                Clarisse Lim
               </a>
             </h1>
           </motion.div>

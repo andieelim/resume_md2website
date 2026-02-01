@@ -62,7 +62,7 @@ resume_md2website/
 |-- package.json               # Dependencies and scripts
 |-- tailwind.config.js         # Tailwind customization
 |-- postcss.config.js          # PostCSS configuration
-|-- resume_vibhor_janey_updated_aug_2025.md  # Resume data source
+|-- resume_clarisse_lim_2026.md  # Resume data source
 `-- README.md
 ```
 
@@ -255,7 +255,7 @@ To update site content, modify the resume markdown file and re-run the app or ex
 
 ```bash
 # Edit the resume data
-code resume_vibhor_janey_updated_aug_2025.md
+code resume_clarisse_lim_2026.md
 
 # Preview locally
 npm run dev
@@ -304,7 +304,7 @@ This project is open source and available under the MIT License.
 
 ## About
 
-Built by Vibhor Janey
+Built by Clarisse Lim
 Senior Manager, AI Solution Architect at Bristol Myers Squibb
 
 Last Updated: January 31, 2026

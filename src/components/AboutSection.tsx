@@ -44,7 +44,14 @@ export function AboutSection({ profile, education = [], isStandalone = false }: 
     return contact.url.replace('https://', '');
   };
 
-  const primaryEducation = education[0];
+  const primaryEducation =
+    education.find(item => item.degree.toLowerCase().includes('business analytics')) || education[0];
+  const educationLabel = primaryEducation
+    ? (primaryEducation.degree.match(/\bMS\b/i)
+        ? primaryEducation.degree.replace(/Master of Science/i, 'MS')
+        : 'MS, Business Analytics')
+    : 'Education available on request';
+  const currentRole = profile.title.split('|')[0].trim();
   const locationText = getContactValue('Location');
 
   return (
@@ -103,7 +110,7 @@ export function AboutSection({ profile, education = [], isStandalone = false }: 
                 >
                   <Briefcase className="w-5 h-5 text-secondary mb-2" />
                   <div className="font-mono text-xs text-muted-foreground">Current Role</div>
-                  <div className="font-medium">{profile.title}</div>
+                  <div className="font-medium">{currentRole}</div>
                 </motion.div>
                 <motion.div 
                   whileHover={{ scale: 1.02 }}
@@ -111,7 +118,7 @@ export function AboutSection({ profile, education = [], isStandalone = false }: 
                 >
                   <GraduationCap className="w-5 h-5 text-accent mb-2" />
                   <div className="font-mono text-xs text-muted-foreground">Education</div>
-                  <div className="font-medium">{primaryEducation ? primaryEducation.degree : 'Education available on request'}</div>
+                  <div className="font-medium">{educationLabel}</div>
                 </motion.div>
               </div>
             </motion.div>

@@ -5,7 +5,7 @@ import { SkipNavigation } from '@/components/SkipNavigation'
 import { parseResumeMarkdown } from '@/lib/parseResumeMarkdown'
 
 export const metadata: Metadata = {
-  title: 'Vibhor Janey — AI Solution Architect',
+  title: 'Clarisse Lim — Data Analyst',
   description: 'Architecting AI solutions for manufacturing and healthcare. Expert in LangGraph, LLM orchestration, and production-scale ML systems.',
 }
 
@@ -29,10 +29,10 @@ export default function RootLayout({
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-muted-foreground font-mono">
-                <span className="text-primary">&gt;</span> vibhor.janey@gmail.com
+                <span className="text-primary">&gt;</span> clarisse.lim416@gmail.com
               </p>
               <p className="text-sm text-muted-foreground">
-                © 2026 Vibhor Janey
+                © 2026 Clarisse Lim
               </p>
             </div>
           </div>

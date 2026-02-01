@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { mdToPdf } from 'md-to-pdf';
 
-const inputPath = path.join(process.cwd(), 'resume_vibhor_janey_updated_aug_2025.md');
-const outputPath = path.join(process.cwd(), 'resume_vibhor_janey_updated_aug_2025.pdf');
+const inputPath = path.join(process.cwd(), 'resume_clarisse_lim_2026.md');
+const outputPath = path.join(process.cwd(), 'resume_clarisse_lim_2026.pdf');
 
 const markdown = fs.readFileSync(inputPath, 'utf-8');
 

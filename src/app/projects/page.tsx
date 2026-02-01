@@ -2,8 +2,8 @@ import { parseResumeMarkdown } from '@/lib/parseResumeMarkdown';
 import { ProjectsSection } from '@/components/ProjectsSection';
 
 export const metadata = {
-  title: 'Projects | Vibhor Janey',
-  description: 'Explore key projects and technical achievements by Vibhor Janey.',
+  title: 'Projects | Clarisse Lim',
+  description: 'Explore key projects and technical achievements by Clarisse Lim.',
 };
 
 export default function ProjectsPage() {

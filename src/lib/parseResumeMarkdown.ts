@@ -1,20 +1,28 @@
 import fs from 'fs';
 import path from 'path';
-import type { ParsedContent, Profile, ExperienceEntry, Project, Publication, Education, Course } from './models';
+import type { ParsedContent, Profile, ExperienceEntry, Project, Publication, Education, Certification } from './models';
 
 // Cache for parsed markdown text to avoid re-processing
 const markdownCache = new Map<string, string>();
+
+function stripHtmlComments(text: string): string {
+  if (!text) return '';
+  return text.replace(/<!--[\s\S]*?-->/g, '').trim();
+}
 
 // Helper function to parse markdown formatting
 function parseMarkdownText(text: string): string {
   if (!text) return '';
   
+  const cleanedText = stripHtmlComments(text);
+  if (!cleanedText) return '';
+
   // Check cache first
-  if (markdownCache.has(text)) {
-    return markdownCache.get(text)!;
+  if (markdownCache.has(cleanedText)) {
+    return markdownCache.get(cleanedText)!;
   }
   
-  let result = text;
+  let result = cleanedText;
   
   // Convert **bold** to <strong>
   result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -32,7 +40,7 @@ function parseMarkdownText(text: string): string {
       markdownCache.delete(firstKey);
     }
   }
-  markdownCache.set(text, result);
+  markdownCache.set(cleanedText, result);
   
   return result;
 }
@@ -259,6 +267,7 @@ function parseProjects(content: string): Project[] {
     const lines = block.split('\n');
     let description = '';
     let category = '';
+    let image = '';
     let metrics: string[] = [];
     let technologies: string[] = [];
     
@@ -267,6 +276,8 @@ function parseProjects(content: string): Project[] {
       
       if (trimmedLine.startsWith('**Category:**')) {
         category = trimmedLine.replace(/\*\*Category:\*\*/, '').trim();
+      } else if (trimmedLine.startsWith('**Image:**')) {
+        image = trimmedLine.replace(/\*\*Image:\*\*/, '').trim();
       } else if (trimmedLine.startsWith('**Metrics:**')) {
         const metricsText = trimmedLine.replace(/\*\*Metrics:\*\*/, '').trim();
         metrics = metricsText.split(',').map(m => m.trim()).filter(m => m.length > 0);
@@ -283,6 +294,7 @@ function parseProjects(content: string): Project[] {
         title,
         description,
         link,
+        image: image || undefined,
         category,
         metrics,
         technologies
@@ -361,29 +373,37 @@ function parseEducation(content: string): Education[] {
       location = parts[1] || '';
     }
     
+    const details = lines
+      .slice(2)
+      .map(line => line.trim())
+      .filter(line => line.startsWith('- '))
+      .map(line => line.replace(/^- /, '').trim())
+      .filter(line => line.length > 0);
+
     education.push({
       institution,
       degree,
       timeframe,
-      location
+      location,
+      details: details.length > 0 ? details : undefined
     });
   }
   
   return education;
 }
 
-function parseCourses(content: string): Course[] {
-  const courses: Course[] = [];
+function parseCertifications(content: string): Certification[] {
+  const certifications: Certification[] = [];
   
-  const coursesSection = content.match(/## COURSES\s*\n\n?([\s\S]*?)(?=\n---|\n##|$)/);
-  if (!coursesSection) return courses;
+  const certSection = content.match(/## CERTIFICATIONS\s*\n\n?([\s\S]*?)(?=\n---|\n##|$)/);
+  if (!certSection) return certifications;
   
-  const coursesText = coursesSection[1];
+  const certText = certSection[1];
   
-  // Split by double newlines to get individual course entries
-  const courseBlocks = coursesText.split(/\n\n+/).filter(block => block.trim());
+  // Split by double newlines to get individual certification entries
+  const certBlocks = certText.split(/\n\n+/).filter(block => block.trim());
   
-  for (const block of courseBlocks) {
+  for (const block of certBlocks) {
     const lines = block.split('\n').filter(line => line.trim());
     if (lines.length === 0) continue;
     
@@ -401,14 +421,14 @@ function parseCourses(content: string): Course[] {
       date = lines[1].trim();
     }
     
-    courses.push({
+    certifications.push({
       title,
       institution,
       date
     });
   }
   
-  return courses;
+  return certifications;
 }
 
 function parsePublications(content: string): Publication[] {
@@ -473,8 +493,9 @@ function parsePublications(content: string): Publication[] {
 
 export function parseResumeMarkdown(): ParsedContent {
   try {
-    const resumePath = path.join(process.cwd(), 'resume_vibhor_janey_updated_aug_2025.md');
-    const content = fs.readFileSync(resumePath, 'utf-8');
+    const resumePath = path.join(process.cwd(), 'resume_clarisse_lim_2026.md');
+    const rawContent = fs.readFileSync(resumePath, 'utf-8');
+    const content = stripHtmlComments(rawContent);
     
     // Check cache first (use file content as cache key)
     const cacheKey = content.length + '_' + content.substring(0, 100).replace(/\s/g, '');
@@ -549,9 +570,8 @@ export function parseResumeMarkdown(): ParsedContent {
     // Parse skills
     const { allSkills: skills, categories: skillCategories } = parseSkills(content);
 
-    // Create bio
-    let bio = `${name} is an experienced ${title} with expertise in AI solution architecture, data engineering, and machine learning applications.`;
-    bio += '\n\nCurrently serving as Senior Manager of AI Solution Architect at Bristol Myers Squibb, leading development of AI copilot experiences for manufacturing operations and building advanced data architecture solutions.';
+    // Create bio from resume content (avoid hard-coded content)
+    const bio = headline;
 
     const profile: Profile = {
       name,
@@ -564,11 +584,11 @@ export function parseResumeMarkdown(): ParsedContent {
       contacts
     };
 
-    // Parse experience, education, projects, courses, and publications
+    // Parse experience, education, projects, certifications, and publications
     const experience = parseWorkExperience(content);
     const education = parseEducation(content);
     const projects = parseProjects(content);
-    const courses = parseCourses(content);
+    const certifications = parseCertifications(content);
     const publications = parsePublications(content);
 
     const result = {
@@ -576,7 +596,7 @@ export function parseResumeMarkdown(): ParsedContent {
       experience,
       education,
       projects,
-      courses,
+      certifications,
       publications
     };
 
@@ -593,73 +613,22 @@ export function parseResumeMarkdown(): ParsedContent {
   } catch (error) {
     console.error('Error parsing resume:', error);
     
-    // Fallback data
+    // Fallback data (empty to avoid injecting unrelated content)
     return {
       profile: {
-        name: 'Vibhor Janey',
-        title: 'AI Solution Architect',
-        headline: 'Architecting Intelligent Systems — delivering production-scale ML systems and agentic orchestration for manufacturing and healthcare.',
-        bio: 'Experienced AI Solution Architect specializing in manufacturing and healthcare AI applications.\n\nCurrently serving as Senior Manager of AI Solution Architect at Bristol Myers Squibb, leading development of AI copilot experiences for manufacturing operations.',
-        skills: ['AI Architecture', 'Machine Learning', 'Data Engineering', 'Python', 'Next.js', 'React'],
-        skillCategories: [
-          { category: 'AI & ML', skills: ['Python', 'Machine Learning', 'Deep Learning', 'TensorFlow', 'PyTorch'] },
-          { category: 'Development', skills: ['React', 'Next.js', 'TypeScript', 'JavaScript'] },
-          { category: 'Cloud & Infrastructure', skills: ['AWS', 'Docker', 'Kubernetes', 'CI/CD'] }
-        ],
-        highlights: [
-          { value: '5,000+', label: 'Active Users' },
-          { value: '6+', label: 'Years Experience' },
-          { value: '40%', label: 'Efficiency Gain' },
-          { value: '98.59%', label: 'CV Accuracy' }
-        ],
-        contacts: [
-          { label: 'Email', url: 'mailto:vibhor.janey@gmail.com' },
-          { label: 'LinkedIn', url: 'https://www.linkedin.com/in/vibhorjaney/' },
-          { label: 'GitHub', url: 'https://github.com/Vibz28' }
-        ]
+        name: '',
+        title: '',
+        headline: '',
+        bio: '',
+        skills: [],
+        skillCategories: [],
+        highlights: [],
+        contacts: []
       },
-      experience: [
-        {
-          employer: 'Bristol Myers Squibb',
-          title: 'Senior Manager, AI Solution Architect',
-          timeframe: 'Jul 2025 – Present',
-          location: 'New Brunswick, NJ',
-          summary: 'Delivering AI copilot and decision-support experience targeting 5,000+ manufacturing users.',
-          achievements: [
-            'Architecting agentic orchestration layer with graph-based workflow engine',
-            'Building pipelines for RCA on deviations and auto-generating CAPA drafts',
-            'Implementing LLM observability and tracing layer for generation traceability'
-          ]
-        }
-      ],
-      education: [
-        {
-          institution: 'Tufts University',
-          degree: 'MS, Data Science',
-          timeframe: 'Sep 2021 – Dec 2022',
-          location: 'Medford, MA'
-        },
-        {
-          institution: 'Purdue University',
-          degree: 'B.Sc., Computer Graphics Technology',
-          timeframe: 'Aug 2015 – May 2019',
-          location: 'West Lafayette, IN'
-        }
-      ],
-      projects: [
-        {
-          title: 'Cotton Pest Classification — Few-Shot Prototypical Networks (PyTorch)',
-          description: 'Proposed and implemented a few-shot prototypical network to identify cotton crop pests with limited annotated samples.',
-          link: 'https://1drv.ms/b/s!AuN5d6BNlVtfg6tVg6HA8sfAXcIulg?e=krITgi'
-        }
-      ],
-      courses: [
-        {
-          title: "Steve Hoberman's Live Online Data Modeling Master Class",
-          institution: 'Technics Publications',
-          date: 'Dec 2024'
-        }
-      ],
+      experience: [],
+      education: [],
+      projects: [],
+      certifications: [],
       publications: []
     };
   }

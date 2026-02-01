@@ -73,7 +73,7 @@ export function ContactForm({ profile }: ContactFormProps) {
     if (!formData.name || !formData.email || !formData.message) return;
 
     const emailContact = profile.contacts.find(contact => contact.label.toLowerCase() === 'email');
-    const to = emailContact ? emailContact.url.replace('mailto:', '') : 'vibhor.janey@gmail.com';
+    const to = emailContact ? emailContact.url.replace('mailto:', '') : 'clarisse.lim416@gmail.com';
     const subject = encodeURIComponent(formData.subject.trim() || `Message from ${formData.name}`);
     const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
     
@@ -89,7 +89,7 @@ export function ContactForm({ profile }: ContactFormProps) {
 
   const copyEmail = () => {
     const emailContact = profile.contacts.find(contact => contact.label.toLowerCase() === 'email');
-    const email = emailContact ? emailContact.url.replace('mailto:', '') : 'vibhor.janey@gmail.com';
+    const email = emailContact ? emailContact.url.replace('mailto:', '') : 'clarisse.lim416@gmail.com';
     navigator.clipboard.writeText(email);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -170,7 +170,7 @@ export function ContactForm({ profile }: ContactFormProps) {
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Prefer to copy email?</p>
                   <p className="font-mono text-sm">
-                    {formatContactValue('email', profile.contacts.find(contact => contact.label.toLowerCase() === 'email')?.url || 'mailto:vibhor.janey@gmail.com')}
+                    {formatContactValue('email', profile.contacts.find(contact => contact.label.toLowerCase() === 'email')?.url || 'mailto:clarisse.lim416@gmail.com')}
                   </p>
                 </div>
                 <motion.button

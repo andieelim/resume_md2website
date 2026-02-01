@@ -33,6 +33,7 @@ export interface Project {
   title: string;
   description: string;
   link?: string;
+  image?: string;
   category?: string;
   metrics?: string[];
   technologies?: string[];
@@ -52,9 +53,10 @@ export interface Education {
   degree: string;
   timeframe: string;
   location: string;
+  details?: string[];
 }
 
-export interface Course {
+export interface Certification {
   title: string;
   institution: string;
   date: string;
@@ -65,6 +67,6 @@ export interface ParsedContent {
   experience: ExperienceEntry[];
   education: Education[];
   projects: Project[];
-  courses: Course[];
+  certifications: Certification[];
   publications: Publication[];
 }

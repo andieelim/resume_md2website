@@ -2,8 +2,8 @@ import { parseResumeMarkdown } from '@/lib/parseResumeMarkdown';
 import { AboutSection } from '@/components/AboutSection';
 
 export const metadata = {
-  title: 'About | Vibhor Janey',
-  description: 'Learn about Vibhor Janey\'s background, expertise, and professional journey in AI and data science.',
+  title: 'About | Clarisse Lim',
+  description: 'Learn about Clarisse Lim\'s background, expertise, and professional journey in data science and marketing analytics.',
 };
 
 export default function AboutPage() {

@@ -121,7 +121,7 @@ export function ProjectsSection({ projects: markdownProjects }: ProjectsSectionP
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project, index) => {
               const status = getStatus(project.category);
-              const image = getProjectImage(project.title);
+              const image = project.image || getProjectImage(project.title);
               const CategoryIcon = getCategoryIcon(project.category);
               
               return (
